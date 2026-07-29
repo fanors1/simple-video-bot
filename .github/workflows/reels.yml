@@ -1,0 +1,76 @@
+name: Publicar Reels
+
+# ============================================================
+#  6 Reels/dia (cada corrida hace AMBOS canales). Horarios en UTC.
+#  Colombia = UTC-5. Distribuidos para no estresar la API de Agnes.
+#    Reel #1  07:30 CO = 12:30 UTC
+#    Reel #2  11:30 CO = 16:30 UTC
+#    Reel #3  13:30 CO = 18:30 UTC
+#    Reel #4  16:30 CO = 21:30 UTC
+#    Reel #5  19:30 CO = 00:30 UTC (dia siguiente)
+#    Reel #6  21:00 CO = 02:00 UTC (dia siguiente)
+# ============================================================
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 12 * * *'
+    - cron: '30 16 * * *'
+    - cron: '30 18 * * *'
+    - cron: '30 21 * * *'
+    - cron: '30 0 * * *'
+    - cron: '0 2 * * *'
+
+concurrency:
+  group: reels
+  cancel-in-progress: false
+
+jobs:
+  publicar-reels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci || npm install
+
+      - name: Instalar fuente para los titulos
+        run: sudo apt-get update && sudo apt-get install -y fonts-liberation
+
+      - name: Reconstruir credenciales desde Secrets
+        env:
+          ACCOUNTS_JSON: ${{ secrets.ACCOUNTS_JSON }}
+          YOUTUBE_CREDENTIALS_JSON: ${{ secrets.YOUTUBE_CREDENTIALS_JSON }}
+          YOUTUBE_TOKEN_JSON: ${{ secrets.YOUTUBE_TOKEN_JSON }}
+          YOUTUBE_TOKEN_CANAL2_JSON: ${{ secrets.YOUTUBE_TOKEN_CANAL2_JSON }}
+        run: |
+          printf '%s' "$ACCOUNTS_JSON" > accounts.json
+          if [ -n "$YOUTUBE_CREDENTIALS_JSON" ]; then printf '%s' "$YOUTUBE_CREDENTIALS_JSON" > youtube-credentials.json; fi
+          if [ -n "$YOUTUBE_TOKEN_JSON" ]; then printf '%s' "$YOUTUBE_TOKEN_JSON" > youtube-token.json; fi
+          if [ -n "$YOUTUBE_TOKEN_CANAL2_JSON" ]; then mkdir -p accounts/canal2 && printf '%s' "$YOUTUBE_TOKEN_CANAL2_JSON" > accounts/canal2/youtube-token.json; fi
+
+      - name: Generar y publicar Reels (ambos canales)
+        env:
+          DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          SEGMENT_COUNT: '7'
+        run: node generate-random.js
+
+      - name: Guardar el historial de temas actualizado
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Actualizar historial de temas (reels) [skip ci]"
+          git push || echo "Nada que pushear o push fallo (no critico)"
