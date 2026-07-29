@@ -1,0 +1,20 @@
+# Dependencias
+node_modules/
+
+# Secretos y credenciales — NUNCA subir estos
+.env
+accounts.json
+youtube-credentials.json
+youtube-token.json
+tiktok-token.json
+accounts/**/token*.json
+accounts/**/*token*.json
+*.token.json
+
+# Salida generada
+output/
+logs/
+
+# Sistema
+.DS_Store
+Thumbs.db
