@@ -66,5 +66,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ 2>/dev/null || true
-          git diff --staged --quiet || git commit -m "Actualizar historial de temas (reels) [skip ci]"
-          git push || echo "Nada que pushear o push fallo (no critico)"
+          git diff --staged --quiet && echo "Nada que guardar" && exit 0
+          git commit -m "Actualizar historial de temas (reels) [skip ci]"
+          for intento in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && echo "Historial guardado" && exit 0
+            echo "Choque de push (intento $intento), reintentando..."
+            sleep $((RANDOM % 10 + 3))
+          done
+          echo "No se pudo guardar el historial tras varios intentos (no critico)"
