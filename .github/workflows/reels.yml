@@ -1,18 +1,12 @@
 name: Publicar Reels
 
-# ============================================================
-#  6 Reels/dia (cada corrida hace AMBOS canales). Horarios en UTC.
-#  Colombia = UTC-5. Distribuidos para no estresar la API de Agnes.
-#    Reel #1  07:30 CO = 12:30 UTC
-#    Reel #2  11:30 CO = 16:30 UTC
-#    Reel #3  13:30 CO = 18:30 UTC
-#    Reel #4  16:30 CO = 21:30 UTC
-#    Reel #5  19:30 CO = 00:30 UTC (dia siguiente)
-#    Reel #6  21:00 CO = 02:00 UTC (dia siguiente)
-# ============================================================
-
 on:
   workflow_dispatch:
+    inputs:
+      cuenta:
+        description: 'Cuenta a correr (curious4d, canal2, o vacio para ambas)'
+        required: false
+        default: ''
   schedule:
     - cron: '30 12 * * *'
     - cron: '30 16 * * *'
@@ -59,12 +53,12 @@ jobs:
           if [ -n "$YOUTUBE_TOKEN_JSON" ]; then printf '%s' "$YOUTUBE_TOKEN_JSON" > youtube-token.json; fi
           if [ -n "$YOUTUBE_TOKEN_CANAL2_JSON" ]; then mkdir -p accounts/canal2 && printf '%s' "$YOUTUBE_TOKEN_CANAL2_JSON" > accounts/canal2/youtube-token.json; fi
 
-      - name: Generar y publicar Reels (ambos canales)
+      - name: Generar y publicar Reels
         env:
           DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
           SEGMENT_COUNT: '7'
-        run: node generate-random.js
+        run: node generate-random.js "" "${{ inputs.cuenta }}"
 
       - name: Guardar el historial de temas actualizado
         if: always()
