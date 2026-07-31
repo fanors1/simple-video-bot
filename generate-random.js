@@ -66,7 +66,7 @@ async function generarReelParaCuenta(categoria, accountName) {
       await textToSpeech(segment.narration, audioPath);
 
       const syncedPath = path.join(workDir, `synced-${i}.mp4`);
-      const { duration } = await buildSyncedSegment(clipPath, audioPath, syncedPath);
+      const { duration } = await buildSyncedSegment(clipPath, audioPath, syncedPath, { zoomEntrada: i === 0 });
       syncedPaths.push(syncedPath);
       durations.push(duration);
     }
