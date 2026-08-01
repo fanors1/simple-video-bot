@@ -1,32 +1,32 @@
 {
-  "curious4d": {
-    "contentProfile": "curious4d",
-    "watermarkPath": "./assets/logo.png",
-    "youtubeCredentialsPath": "./youtube-credentials.json",
-    "youtubeTokenPath": "./youtube-token.json",
-    "facebookPageId": "1193866613810828",
-    "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_CURIOUS4D",
-    "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_CURIOUS4D",
-    "tiktokTokenPath": "./accounts/curious4d/tiktok-token.json"
-  },
-  "canal2": {
-    "contentProfile": "hipotesis4d",
-    "watermarkPath": "./assets/logo-hipotesis4d.png",
-    "youtubeCredentialsPath": "./youtube-credentials.json",
-    "youtubeTokenPath": "./accounts/canal2/youtube-token.json",
-    "facebookPageId": "1220213537839259",
-    "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_HIPOTESIS4D",
-    "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_HIPOTESIS4D",
-    "tiktokTokenPath": "./accounts/canal2/tiktok-token.json"
-  },
-  "oscuro4d": {
-    "contentProfile": "oscuro4d",
-    "watermarkPath": "./assets/logo-oscuro4d.png",
-    "youtubeCredentialsPath": "./youtube-credentials.json",
-    "youtubeTokenPath": "./accounts/oscuro4d/youtube-token.json",
-    "facebookPageId": "1282255214974087",
-    "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_OSCURO4D",
-    "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_CURIOUS4D",
-    "tiktokTokenPath": "./accounts/oscuro4d/tiktok-token.json"
-  }
+    "curious4d": {
+        "contentProfile": "curious4d",
+        "watermarkPath": "./assets/logo.png",
+        "youtubeCredentialsPath": "./youtube-credentials.json",
+        "youtubeTokenPath": "./youtube-token.json",
+        "facebookPageId": "1193866613810828",
+        "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_CURIOUS4D",
+        "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_CURIOUS4D",
+        "tiktokTokenPath": "./accounts/curious4d/tiktok-token.json"
+    },
+    "canal2": {
+        "contentProfile": "hipotesis4d",
+        "watermarkPath": "./assets/logo-hipotesis4d.png",
+        "youtubeCredentialsPath": "./youtube-credentials.json",
+        "youtubeTokenPath": "./accounts/canal2/youtube-token.json",
+        "facebookPageId": "1220213537839259",
+        "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_HIPOTESIS4D",
+        "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_HIPOTESIS4D",
+        "tiktokTokenPath": "./accounts/canal2/tiktok-token.json"
+    },
+    "oscuro4d": {
+        "contentProfile": "oscuro4d",
+        "watermarkPath": "./assets/logo-oscuro4d.png",
+        "youtubeCredentialsPath": "./youtube-credentials.json",
+        "youtubeTokenPath": "./accounts/oscuro4d/youtube-token.json",
+        "facebookPageId": "1282255214974087",
+        "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_OSCURO4D",
+        "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_OSCURO4D",
+        "tiktokTokenPath": "./accounts/oscuro4d/tiktok-token.json"
+    }
 }
