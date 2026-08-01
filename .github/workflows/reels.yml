@@ -47,11 +47,13 @@ jobs:
           YOUTUBE_CREDENTIALS_JSON: ${{ secrets.YOUTUBE_CREDENTIALS_JSON }}
           YOUTUBE_TOKEN_JSON: ${{ secrets.YOUTUBE_TOKEN_JSON }}
           YOUTUBE_TOKEN_CANAL2_JSON: ${{ secrets.YOUTUBE_TOKEN_CANAL2_JSON }}
+          YOUTUBE_TOKEN_OSCURO4D_JSON: ${{ secrets.YOUTUBE_TOKEN_OSCURO4D_JSON }}
         run: |
           printf '%s' "$ACCOUNTS_JSON" > accounts.json
           if [ -n "$YOUTUBE_CREDENTIALS_JSON" ]; then printf '%s' "$YOUTUBE_CREDENTIALS_JSON" > youtube-credentials.json; fi
           if [ -n "$YOUTUBE_TOKEN_JSON" ]; then printf '%s' "$YOUTUBE_TOKEN_JSON" > youtube-token.json; fi
           if [ -n "$YOUTUBE_TOKEN_CANAL2_JSON" ]; then mkdir -p accounts/canal2 && printf '%s' "$YOUTUBE_TOKEN_CANAL2_JSON" > accounts/canal2/youtube-token.json; fi
+          if [ -n "$YOUTUBE_TOKEN_OSCURO4D_JSON" ]; then mkdir -p accounts/oscuro4d && printf '%s' "$YOUTUBE_TOKEN_OSCURO4D_JSON" > accounts/oscuro4d/youtube-token.json; fi
 
       - name: Generar y publicar Reels
         env:
