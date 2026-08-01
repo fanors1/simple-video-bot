@@ -18,5 +18,15 @@
     "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_HIPOTESIS4D",
     "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_HIPOTESIS4D",
     "tiktokTokenPath": "./accounts/canal2/tiktok-token.json"
+  },
+  "oscuro4d": {
+    "contentProfile": "oscuro4d",
+    "watermarkPath": "./assets/logo-oscuro4d.png",
+    "youtubeCredentialsPath": "./youtube-credentials.json",
+    "youtubeTokenPath": "./accounts/oscuro4d/youtube-token.json",
+    "facebookPageId": "1282255214974087",
+    "facebookPageAccessToken": "PEGAR_TOKEN_DE_PAGINA_OSCURO4D",
+    "instagramAccessToken": "PEGAR_TOKEN_INSTAGRAM_CURIOUS4D",
+    "tiktokTokenPath": "./accounts/oscuro4d/tiktok-token.json"
   }
 }
