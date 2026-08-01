@@ -71,6 +71,11 @@ async function generarReelParaCuenta(categoria, accountName) {
       durations.push(duration);
     }
 
+    const duracionTotal = durations.reduce((a, b) => a + b, 0);
+    if (duracionTotal > 85) {
+      logger.warn(`Video largo (${duracionTotal.toFixed(1)}s), cerca del limite de Instagram (90s). Agnes genero narraciones largas en este reel.`, { account: account.name, duracionTotal });
+    }
+
     const concatPath = path.join(workDir, 'concat.mp4');
     await concatSyncedSegments(syncedPaths, concatPath);
 
