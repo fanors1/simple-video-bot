@@ -61,7 +61,7 @@ async function generarHistoriaParaCuenta(accountName) {
     fs.writeFileSync(finalPath, Buffer.alloc(100));
     logger.info('[MOCK] Historia simulada (sin llamadas reales a TTS/ffmpeg)', { finalPath });
   } else {
-    await textToSpeech(segment.narration, audioPath);
+    await textToSpeech(segment.narration, audioPath, { voice: account.voice, rate: account.voiceRate, pitch: account.voicePitch });
 
     const syncedPath = path.join(workDir, 'synced-0.mp4');
     const { duration } = await buildSyncedSegment(clipPath, audioPath, syncedPath);
