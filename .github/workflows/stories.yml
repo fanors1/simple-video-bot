@@ -1,16 +1,19 @@
 name: Publicar Historias
 
-# ============================================================
-#  2 Historias/dia (cada corrida hace AMBOS canales). UTC (CO = UTC-5).
-#    Historia #1  06:00 CO = 11:00 UTC  (prioridad: arranca el dia)
-#    Historia #2  15:00 CO = 20:00 UTC
-# ============================================================
-
 on:
   workflow_dispatch:
+    inputs:
+      cuenta:
+        description: 'Cuenta a correr (vacio = todas)'
+        required: false
+        default: ''
   schedule:
-    - cron: '30 10 * * *'
-    - cron: '30 17 * * *'
+    - cron: '20 9 * * *'
+    - cron: '5 12 * * *'
+    - cron: '55 14 * * *'
+    - cron: '40 17 * * *'
+    - cron: '25 20 * * *'
+    - cron: '15 22 * * *'
 
 concurrency:
   group: stories
@@ -43,11 +46,28 @@ jobs:
           ACCOUNTS_JSON: ${{ secrets.ACCOUNTS_JSON }}
         run: printf '%s' "$ACCOUNTS_JSON" > accounts.json
 
-      - name: Generar y publicar Historias (ambos canales)
+      - name: Generar y publicar Historias
         env:
           DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
-        run: node generate-story.js
+          CRON: ${{ github.event.schedule }}
+          CUENTA_MANUAL: ${{ inputs.cuenta }}
+        run: |
+          if [ -n "$CUENTA_MANUAL" ]; then
+            CUENTA="$CUENTA_MANUAL"
+          else
+            case "$CRON" in
+              "20 9 * * *")  CUENTA="curious4d" ;;
+              "5 12 * * *")  CUENTA="canal2" ;;
+              "55 14 * * *") CUENTA="oscuro4d" ;;
+              "40 17 * * *") CUENTA="curious4d" ;;
+              "25 20 * * *") CUENTA="canal2" ;;
+              "15 22 * * *") CUENTA="oscuro4d" ;;
+              *)             CUENTA="" ;;
+            esac
+          fi
+          echo "Corriendo historia de cuenta: $CUENTA (cron: $CRON)"
+          node generate-story.js "$CUENTA"
 
       - name: Guardar el historial de temas actualizado
         if: always()
