@@ -2,8 +2,6 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const fs = require('fs');
 
-// Anclamos ACCOUNTS_PATH antes de requerir ./lib/accounts (que lo lee al
-// cargarse) para que funcione sin importar el cwd (Task Scheduler / GitHub Actions).
 process.env.ACCOUNTS_PATH = process.env.ACCOUNTS_PATH || path.join(__dirname, 'accounts.json');
 
 const logger = require('./lib/logger');
@@ -19,13 +17,6 @@ const { agregarAlHistorial } = require('./lib/historial');
 
 process.on('unhandledRejection', (reason) => logger.error('Unhandled Rejection', { reason: reason?.message || reason }));
 process.on('uncaughtException', (err) => logger.error('Uncaught Exception', { error: err.message }));
-
-// ============================================================
-//  Genera y publica SOLO la Historia (Facebook + Instagram), con
-//  contenido NUEVO y corto (1 segmento, ~5s). Corre para TODAS las
-//  cuentas de accounts.json automaticamente. La frecuencia la controla
-//  el scheduler (Task Scheduler local o cron de GitHub Actions).
-// ============================================================
 
 const DRY_RUN = (process.env.DRY_RUN ?? 'true').toLowerCase() !== 'false';
 
@@ -114,7 +105,16 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  const accountNames = Object.keys(JSON.parse(fs.readFileSync(ACCOUNTS_PATH)));
+  const todasLasCuentas = Object.keys(JSON.parse(fs.readFileSync(ACCOUNTS_PATH)));
+
+  const cuentaPedida = (process.argv[2] || '').trim();
+  const accountNames = cuentaPedida ? todasLasCuentas.filter((c) => c === cuentaPedida) : todasLasCuentas;
+
+  if (cuentaPedida && accountNames.length === 0) {
+    logger.error('La cuenta pedida no existe en accounts.json', { cuentaPedida });
+    process.exitCode = 1;
+    return;
+  }
 
   for (const accountName of accountNames) {
     try {
