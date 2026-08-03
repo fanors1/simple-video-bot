@@ -95,10 +95,16 @@ const HASHTAGS_VIRALES = {
 };
 
 function construirDescripcionConHashtags(post, contentProfile) {
-  const especificos = (post.tags || []).map((t) => normalizarHashtag(t));
-  const genericos = (HASHTAGS_VIRALES[contentProfile] || HASHTAGS_VIRALES.curious4d).map((t) => normalizarHashtag(t));
+  const virales = ['viral', 'parati'];
+  const especificos = (post.tags || [])
+    .map((t) => normalizarHashtag(t))
+    .filter((t) => t && !virales.includes(t));
 
-  const combinados = [...new Set([...especificos, ...genericos])].filter(Boolean).slice(0, 15);
+  const combinados = [...new Set(especificos)].slice(0, 3);
+  for (const v of virales) {
+    if (combinados.length >= 5) break;
+    if (!combinados.includes(v)) combinados.push(v);
+  }
   const lineaHashtags = combinados.map((h) => '#' + h).join(' ');
 
   return `${post.descripcion.trim()}\n\n${lineaHashtags}`;
