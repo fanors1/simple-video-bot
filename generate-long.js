@@ -8,7 +8,7 @@ const logger = require('./lib/logger');
 const { generateLongScript } = require('./lib/longScript');
 const { generateVideo } = require('./lib/agnes');
 const { textToSpeech } = require('./lib/tts');
-const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark } = require('./lib/videoEditor');
+const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark, mezclarAmbienteTenebroso } = require('./lib/videoEditor');
 const { buildAssSubtitles } = require('./lib/subtitles');
 const { publishVideo, setThumbnail } = require('./lib/youtube');
 const { generateThumbnail } = require('./lib/thumbnail');
@@ -53,6 +53,7 @@ async function generarVideoLargoParaCuenta(accountName) {
     const { localPath: clipPath } = await generateVideo(script.topic, {
       outputDir: workDir,
       rawPrompt: bloque.visualPrompt,
+      horizontal: true,
     });
 
     const audioPath = path.join(workDir, `segment-${i}.mp3`);
@@ -101,6 +102,16 @@ async function generarVideoLargoParaCuenta(accountName) {
       await applyWatermark(subtitledPath, WATERMARK_PATH, finalPath);
     } else {
       finalPath = subtitledPath;
+    }
+
+    if (account.ambienteTenebroso) {
+      const conAmbiente = path.join(workDir, 'video-largo-ambiente.mp4');
+      try {
+        await mezclarAmbienteTenebroso(finalPath, conAmbiente, { volumen: account.ambienteVolumen || 0.15 });
+        finalPath = conAmbiente;
+      } catch (err) {
+        logger.warn('No se pudo mezclar el ambiente tenebroso en el video largo', { account: accountName, error: err.message });
+      }
     }
   }
 
