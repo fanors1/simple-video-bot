@@ -10,7 +10,8 @@ const { generateVideo } = require('./lib/agnes');
 const { textToSpeech } = require('./lib/tts');
 const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark } = require('./lib/videoEditor');
 const { buildAssSubtitles } = require('./lib/subtitles');
-const { publishVideo } = require('./lib/youtube');
+const { publishVideo, setThumbnail } = require('./lib/youtube');
+const { generateThumbnail } = require('./lib/thumbnail');
 const { loadAccount } = require('./lib/accounts');
 const { agregarAlHistorial } = require('./lib/historial');
 
@@ -107,6 +108,13 @@ async function generarVideoLargoParaCuenta(accountName) {
 
   const description = buildDescription(script, account);
 
+  let thumbnailPath = null;
+  try {
+    thumbnailPath = await generateThumbnail(script.topic, contentProfile, workDir);
+  } catch (err) {
+    logger.warn('No se pudo generar la miniatura, el video se publicara sin ella', { account: accountName, error: err.message });
+  }
+
   try {
     const result = await publishVideo({
       localPath: finalPath,
@@ -117,6 +125,19 @@ async function generarVideoLargoParaCuenta(accountName) {
       tokenPath: account.youtubeTokenPath,
     });
     logger.info('YouTube (largo): OK', { account: accountName, videoId: result.videoId });
+
+    if (thumbnailPath && result.videoId) {
+      try {
+        await setThumbnail({
+          videoId: result.videoId,
+          thumbnailPath,
+          credentialsPath: account.youtubeCredentialsPath,
+          tokenPath: account.youtubeTokenPath,
+        });
+      } catch (err) {
+        logger.warn('No se pudo subir la miniatura', { account: accountName, error: err.message });
+      }
+    }
   } catch (err) {
     logger.error('YouTube (largo): fallo', { account: accountName, error: err.message });
   }
