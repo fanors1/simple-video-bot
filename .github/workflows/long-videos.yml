@@ -8,9 +8,9 @@ on:
         required: false
         default: ''
   schedule:
-    - cron: '0 7 * * 1'
-    - cron: '0 7 * * 3'
-    - cron: '0 7 * * 5'
+    - cron: '0 4 * * *'
+    - cron: '30 5 * * *'
+    - cron: '0 7 * * *'
 
 concurrency:
   group: long-videos
@@ -64,10 +64,10 @@ jobs:
             CUENTA="$CUENTA_MANUAL"
           else
             case "$CRON" in
-              "0 7 * * 1") CUENTA="curious4d" ;;
-              "0 7 * * 3") CUENTA="canal2" ;;
-              "0 7 * * 5") CUENTA="oscuro4d" ;;
-              *)           CUENTA="" ;;
+              "0 4 * * *")  CUENTA="curious4d" ;;
+              "30 5 * * *") CUENTA="canal2" ;;
+              "0 7 * * *")  CUENTA="oscuro4d" ;;
+              *)            CUENTA="" ;;
             esac
           fi
           echo "Corriendo video largo de cuenta: $CUENTA (cron: $CRON)"
