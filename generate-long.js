@@ -21,6 +21,8 @@ process.on('uncaughtException', (err) => logger.error('Uncaught Exception', { er
 const DRY_RUN = (process.env.DRY_RUN ?? 'true').toLowerCase() !== 'false';
 const NUM_PUNTOS = Number(process.env.LONG_NUM_PUNTOS) || 5;
 
+if (!process.env.AGNES_NUM_FRAMES) process.env.AGNES_NUM_FRAMES = '241';
+
 function buildDescription(script, account) {
   const hashtags = (script.tags || []).map((t) => '#' + t.replace(/\s+/g, '')).join(' ');
   const cuerpo = script.descripcion || script.intro.narration;
