@@ -23,7 +23,8 @@ const NUM_PUNTOS = Number(process.env.LONG_NUM_PUNTOS) || 5;
 
 function buildDescription(script, account) {
   const hashtags = (script.tags || []).map((t) => '#' + t.replace(/\s+/g, '')).join(' ');
-  return `${script.topic}\n\n${script.intro.narration}\n\n${hashtags}`;
+  const cuerpo = script.descripcion || script.intro.narration;
+  return `${script.topic}\n\n${cuerpo}\n\n${hashtags}`;
 }
 
 async function generarVideoLargoParaCuenta(accountName) {
