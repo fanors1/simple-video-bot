@@ -24,7 +24,11 @@ const NUM_PUNTOS = Number(process.env.LONG_NUM_PUNTOS) || 5;
 function buildDescription(script, account) {
   const hashtags = (script.tags || []).map((t) => '#' + t.replace(/\s+/g, '')).join(' ');
   const cuerpo = script.descripcion || script.intro.narration;
-  return `${script.topic}\n\n${cuerpo}\n\n${hashtags}`;
+  let bloqueBusquedas = '';
+  if (Array.isArray(script.keywordsReales) && script.keywordsReales.length) {
+    bloqueBusquedas = '\n\n' + script.keywordsReales.slice(0, 8).join(' | ');
+  }
+  return `${script.topic}\n\n${cuerpo}${bloqueBusquedas}\n\n${hashtags}`;
 }
 
 async function generarVideoLargoParaCuenta(accountName) {
