@@ -127,7 +127,8 @@ async function generarVideoLargoParaCuenta(accountName) {
   let thumbnailPath = null;
   try {
     logger.info('Iniciando generacion de miniatura', { account: accountName, topic: script.topic });
-    thumbnailPath = await generateThumbnail(script.topic, contentProfile, workDir);
+    const promptEscena = (script.intro && script.intro.visualPrompt) ? script.intro.visualPrompt : null;
+    thumbnailPath = await generateThumbnail(script.topic, contentProfile, workDir, promptEscena);
     logger.info('Miniatura lista para subir', { account: accountName, thumbnailPath });
   } catch (err) {
     logger.warn('No se pudo generar la miniatura, el video se publicara sin ella', { account: accountName, error: err.message });
