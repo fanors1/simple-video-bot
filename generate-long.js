@@ -121,7 +121,9 @@ async function generarVideoLargoParaCuenta(accountName) {
 
   let thumbnailPath = null;
   try {
+    logger.info('Iniciando generacion de miniatura', { account: accountName, topic: script.topic });
     thumbnailPath = await generateThumbnail(script.topic, contentProfile, workDir);
+    logger.info('Miniatura lista para subir', { account: accountName, thumbnailPath });
   } catch (err) {
     logger.warn('No se pudo generar la miniatura, el video se publicara sin ella', { account: accountName, error: err.message });
   }
@@ -138,16 +140,20 @@ async function generarVideoLargoParaCuenta(accountName) {
     logger.info('YouTube (largo): OK', { account: accountName, videoId: result.videoId });
 
     if (thumbnailPath && result.videoId) {
+      logger.info('Subiendo miniatura al video', { account: accountName, videoId: result.videoId });
       try {
-        await setThumbnail({
+        const rt = await setThumbnail({
           videoId: result.videoId,
           thumbnailPath,
           credentialsPath: account.youtubeCredentialsPath,
           tokenPath: account.youtubeTokenPath,
         });
+        logger.info('Resultado de subir miniatura', { account: accountName, resultado: JSON.stringify(rt) });
       } catch (err) {
         logger.warn('No se pudo subir la miniatura', { account: accountName, error: err.message });
       }
+    } else {
+      logger.warn('No se sube miniatura', { account: accountName, hayThumbnail: !!thumbnailPath, hayVideoId: !!result.videoId });
     }
   } catch (err) {
     logger.error('YouTube (largo): fallo', { account: accountName, error: err.message });
