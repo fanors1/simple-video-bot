@@ -1,0 +1,31 @@
+name: Probar TikTok
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: test-tiktok
+  cancel-in-progress: false
+
+jobs:
+  probar-tiktok:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci || npm install
+
+      - name: Probar publicacion en TikTok
+        env:
+          ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
+          ZERNIO_ACCOUNT_CURIOUS4D: ${{ secrets.ZERNIO_ACCOUNT_CURIOUS4D }}
+        run: node test-tiktok.js
