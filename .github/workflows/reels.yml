@@ -71,6 +71,10 @@ jobs:
         env:
           DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
+          ZERNIO_ACCOUNT_CURIOUS4D: ${{ secrets.ZERNIO_ACCOUNT_CURIOUS4D }}
+          ZERNIO_ACCOUNT_HIPOTESIS4D: ${{ secrets.ZERNIO_ACCOUNT_HIPOTESIS4D }}
+          ZERNIO_ACCOUNT_OSCURO4D: ${{ secrets.ZERNIO_ACCOUNT_OSCURO4D }}
           SEGMENT_COUNT: '7'
           CRON: ${{ github.event.schedule }}
           CUENTA_MANUAL: ${{ inputs.cuenta }}
