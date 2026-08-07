@@ -28,6 +28,26 @@ function buildDescription(script, account) {
   return `${base}\n\n${hashtags}`.trim();
 }
 
+const TIKTOK_HASHTAGS_NICHO = {
+  curious4d: ['datoscuriosos', 'sabiasque', 'curiosidades', 'aprendeentiktok', 'datosinteresantes'],
+  hipotesis4d: ['quepasariasi', 'historiaalternativa', 'hipotesis', 'reflexion', 'datoscuriosos'],
+  oscuro4d: ['terror', 'historiasdeterror', 'miedo', 'paranormal', 'leyendas'],
+};
+
+const TIKTOK_HASHTAGS_ALCANCE = ['parati', 'fyp', 'foryou', 'viral'];
+
+function buildTikTokCaption(script, contentProfile) {
+  const base = (script.topic || '').slice(0, 150);
+  const nicho = TIKTOK_HASHTAGS_NICHO[contentProfile] || TIKTOK_HASHTAGS_NICHO.curious4d;
+  const propios = (script.tags || [])
+    .map((t) => t.toLowerCase().replace(/\s+/g, ''))
+    .filter((t) => t && t.length <= 20)
+    .slice(0, 3);
+  const todos = [...new Set([...TIKTOK_HASHTAGS_ALCANCE, ...nicho, ...propios])].slice(0, 10);
+  const hashtags = todos.map((t) => '#' + t).join(' ');
+  return `${base}\n\n${hashtags}`.trim();
+}
+
 async function generarReelParaCuenta(categoria, accountName) {
   const account = loadAccount(accountName);
   const contentProfile = account.contentProfile || 'curious4d';
@@ -133,7 +153,7 @@ async function generarReelParaCuenta(categoria, accountName) {
       localPath: finalPath,
       description,
     }),
-    publishTikTokIfAvailable(account, finalPath, description),
+    publishTikTokIfAvailable(account, finalPath, description, script),
   ]);
 
   logResult('YouTube', accountName, ytResult);
@@ -142,7 +162,7 @@ async function generarReelParaCuenta(categoria, accountName) {
   logResult('TikTok', accountName, ttResult);
 }
 
-async function publishTikTokIfAvailable(account, finalPath, description) {
+async function publishTikTokIfAvailable(account, finalPath, description, script) {
   let publishVideo;
   try {
     ({ publishVideo } = require('./lib/tiktok'));
@@ -157,7 +177,8 @@ async function publishTikTokIfAvailable(account, finalPath, description) {
     logger.info('TikTok: sin Zernio configurado, se omite', { hayApiKey: !!apiKey, hayAccountId: !!zernioAccountId, perfil });
     return { skipped: true };
   }
-  return publishVideo({ localPath: finalPath, title: description, zernioAccountId, apiKey });
+  const caption = script ? buildTikTokCaption(script, account.contentProfile || 'curious4d') : description;
+  return publishVideo({ localPath: finalPath, title: caption, zernioAccountId, apiKey });
 }
 
 function logResult(plataforma, accountName, result) {
