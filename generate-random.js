@@ -151,11 +151,13 @@ async function publishTikTokIfAvailable(account, finalPath, description) {
     return { skipped: true };
   }
   const apiKey = process.env.ZERNIO_API_KEY;
-  if (!apiKey || !account.zernioAccountId) {
-    logger.info('TikTok: sin Zernio configurado, se omite', { hayApiKey: !!apiKey, hayAccountId: !!account.zernioAccountId });
+  const perfil = (account.contentProfile || '').toUpperCase();
+  const zernioAccountId = account.zernioAccountId || process.env[`ZERNIO_ACCOUNT_${perfil}`];
+  if (!apiKey || !zernioAccountId) {
+    logger.info('TikTok: sin Zernio configurado, se omite', { hayApiKey: !!apiKey, hayAccountId: !!zernioAccountId, perfil });
     return { skipped: true };
   }
-  return publishVideo({ localPath: finalPath, title: description, zernioAccountId: account.zernioAccountId, apiKey });
+  return publishVideo({ localPath: finalPath, title: description, zernioAccountId, apiKey });
 }
 
 function logResult(plataforma, accountName, result) {
