@@ -56,7 +56,7 @@ async function main() {
   log('PASO 4: Crear el post en TikTok');
   const body = {
     content: 'Prueba automatica',
-    mediaUrls: [publicUrl],
+    mediaItems: [{ type: 'video', url: publicUrl }],
     platforms: [{ platform: 'tiktok', accountId: zernioAccountId }],
     publishNow: true,
   };
