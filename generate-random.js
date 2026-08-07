@@ -8,7 +8,7 @@ const logger = require('./lib/logger');
 const { generateScript } = require('./lib/script');
 const { generateVideo } = require('./lib/agnes');
 const { textToSpeech } = require('./lib/tts');
-const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark } = require('./lib/videoEditor');
+const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark, mezclarAmbienteTenebroso } = require('./lib/videoEditor');
 const { buildAssSubtitles } = require('./lib/subtitles');
 const { publishShort: publishYouTubeShort } = require('./lib/youtube');
 const { publishReel: publishFacebookReel } = require('./lib/facebook');
@@ -96,6 +96,16 @@ async function generarReelParaCuenta(categoria, accountName) {
     } else {
       finalPath = subtitledPath;
     }
+
+    if (account.ambienteTenebroso) {
+      const conAmbiente = path.join(workDir, 'reel-ambiente.mp4');
+      try {
+        await mezclarAmbienteTenebroso(finalPath, conAmbiente, { volumen: account.ambienteVolumen || 0.18 });
+        finalPath = conAmbiente;
+      } catch (err) {
+        logger.warn('No se pudo mezclar el ambiente tenebroso, el reel sigue sin el', { account: accountName, error: err.message });
+      }
+    }
   }
 
   logger.info('Reel final listo', { account: accountName, finalPath, topic: script.topic });
@@ -140,12 +150,12 @@ async function publishTikTokIfAvailable(account, finalPath, description) {
     logger.info('TikTok: modulo no disponible, se omite');
     return { skipped: true };
   }
-  const tokenPath = account.tiktokTokenPath && path.resolve(__dirname, account.tiktokTokenPath);
-  if (!tokenPath || !fs.existsSync(tokenPath)) {
-    logger.info('TikTok: sin token configurado, se omite', { tokenPath });
+  const apiKey = process.env.ZERNIO_API_KEY;
+  if (!apiKey || !account.zernioAccountId) {
+    logger.info('TikTok: sin Zernio configurado, se omite', { hayApiKey: !!apiKey, hayAccountId: !!account.zernioAccountId });
     return { skipped: true };
   }
-  return publishVideo({ tokenPath, localPath: finalPath, title: description });
+  return publishVideo({ localPath: finalPath, title: description, zernioAccountId: account.zernioAccountId, apiKey });
 }
 
 function logResult(plataforma, accountName, result) {
