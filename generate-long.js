@@ -19,7 +19,7 @@ process.on('unhandledRejection', (reason) => logger.error('Unhandled Rejection',
 process.on('uncaughtException', (err) => logger.error('Uncaught Exception', { error: err.message }));
 
 const DRY_RUN = (process.env.DRY_RUN ?? 'true').toLowerCase() !== 'false';
-const NUM_PUNTOS = Number(process.env.LONG_NUM_PUNTOS) || 5;
+const NUM_PUNTOS = Number(process.env.LONG_NUM_PUNTOS) || 4;
 
 if (!process.env.AGNES_NUM_FRAMES) process.env.AGNES_NUM_FRAMES = '241';
 
