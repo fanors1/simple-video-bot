@@ -34,16 +34,12 @@ const TIKTOK_HASHTAGS_NICHO = {
   oscuro4d: ['terror', 'historiasdeterror', 'miedo', 'paranormal', 'leyendas'],
 };
 
-const TIKTOK_HASHTAGS_ALCANCE = ['parati', 'fyp', 'foryou', 'viral'];
+const TIKTOK_HASHTAGS_ALCANCE = ['parati', 'fyp'];
 
 function buildTikTokCaption(script, contentProfile) {
   const base = (script.topic || '').slice(0, 150);
-  const nicho = TIKTOK_HASHTAGS_NICHO[contentProfile] || TIKTOK_HASHTAGS_NICHO.curious4d;
-  const propios = (script.tags || [])
-    .map((t) => t.toLowerCase().replace(/\s+/g, ''))
-    .filter((t) => t && t.length <= 20)
-    .slice(0, 3);
-  const todos = [...new Set([...TIKTOK_HASHTAGS_ALCANCE, ...nicho, ...propios])].slice(0, 10);
+  const nicho = (TIKTOK_HASHTAGS_NICHO[contentProfile] || TIKTOK_HASHTAGS_NICHO.curious4d).slice(0, 3);
+  const todos = [...new Set([...nicho, ...TIKTOK_HASHTAGS_ALCANCE])].slice(0, 5);
   const hashtags = todos.map((t) => '#' + t).join(' ');
   return `${base}\n\n${hashtags}`.trim();
 }
