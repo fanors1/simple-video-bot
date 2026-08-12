@@ -7,8 +7,9 @@ process.env.ACCOUNTS_PATH = process.env.ACCOUNTS_PATH || path.join(__dirname, 'a
 const logger = require('./lib/logger');
 const { generateLongScript } = require('./lib/longScript');
 const { generateVideo } = require('./lib/agnes');
+const { generateImage } = require('./lib/agnesImage');
 const { textToSpeech } = require('./lib/tts');
-const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark, mezclarAmbienteTenebroso } = require('./lib/videoEditor');
+const { getDuration, buildSyncedSegment, buildMultiImageSegment, concatSyncedSegments, burnSubtitles, applyWatermark, mezclarAmbienteTenebroso } = require('./lib/videoEditor');
 const { buildAssSubtitles } = require('./lib/subtitles');
 const { publishVideo, setThumbnail } = require('./lib/youtube');
 const { generateThumbnail } = require('./lib/thumbnail');
@@ -54,14 +55,10 @@ async function generarVideoLargoParaCuenta(accountName) {
   const durations = [];
   const segmentsParaSub = [];
 
+  const SEGUNDOS_POR_IMAGEN = Number(process.env.LONG_SECS_PER_IMAGE) || 9;
+
   for (let i = 0; i < bloques.length; i++) {
     const bloque = bloques[i];
-
-    const { localPath: clipPath } = await generateVideo(script.topic, {
-      outputDir: workDir,
-      rawPrompt: bloque.visualPrompt,
-      horizontal: true,
-    });
 
     const audioPath = path.join(workDir, `segment-${i}.mp3`);
     let syncedPath = path.join(workDir, `synced-${i}.mp4`);
@@ -72,8 +69,31 @@ async function generarVideoLargoParaCuenta(accountName) {
       durations.push(5);
     } else {
       await textToSpeech(bloque.narration, audioPath, { voice: account.voice, rate: account.voiceRate, pitch: account.voicePitch });
-      const { duration } = await buildSyncedSegment(clipPath, audioPath, syncedPath, { horizontal: true });
-      durations.push(duration);
+      const audioDur = await getDuration(audioPath);
+      const numImagenes = Math.max(1, Math.min(4, Math.round(audioDur / SEGUNDOS_POR_IMAGEN)));
+
+      logger.info('Generando imagenes para el bloque', { bloque: i, audioDur: audioDur.toFixed(1), numImagenes });
+
+      const imagePaths = [];
+      for (let j = 0; j < numImagenes; j++) {
+        const promptImg = `${bloque.visualPrompt}, cinematic film still, photorealistic, horror atmosphere, dramatic lighting, 16:9`;
+        try {
+          const { localPath } = await generateImage(promptImg, { outputDir: workDir, size: '1024x1024' });
+          imagePaths.push(localPath);
+        } catch (err) {
+          logger.warn('Fallo generar imagen del bloque, se usa la anterior', { bloque: i, j, error: err.message });
+          if (imagePaths.length) imagePaths.push(imagePaths[imagePaths.length - 1]);
+        }
+      }
+
+      if (imagePaths.length === 0) {
+        const { localPath: clipPath } = await generateVideo(script.topic, { outputDir: workDir, rawPrompt: bloque.visualPrompt, horizontal: true });
+        const { duration } = await buildSyncedSegment(clipPath, audioPath, syncedPath, { horizontal: true });
+        durations.push(duration);
+      } else {
+        const { duration } = await buildMultiImageSegment(imagePaths, audioPath, syncedPath, { horizontal: true });
+        durations.push(duration);
+      }
     }
 
     syncedPaths.push(syncedPath);
