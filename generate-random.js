@@ -8,7 +8,7 @@ const logger = require('./lib/logger');
 const { generateScript } = require('./lib/script');
 const { generateVideo } = require('./lib/agnes');
 const { textToSpeech } = require('./lib/tts');
-const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark, mezclarAmbienteTenebroso } = require('./lib/videoEditor');
+const { buildSyncedSegment, concatSyncedSegments, burnSubtitles, applyWatermark, mezclarAmbienteTenebroso, mezclarAmbienteAngelical } = require('./lib/videoEditor');
 const { buildAssSubtitles } = require('./lib/subtitles');
 const { publishShort: publishYouTubeShort } = require('./lib/youtube');
 const { publishReel: publishFacebookReel } = require('./lib/facebook');
@@ -32,6 +32,7 @@ const TIKTOK_HASHTAGS_NICHO = {
   curious4d: ['datoscuriosos', 'sabiasque', 'curiosidades', 'aprendeentiktok', 'datosinteresantes'],
   hipotesis4d: ['quepasariasi', 'historiaalternativa', 'hipotesis', 'reflexion', 'datoscuriosos'],
   oscuro4d: ['terror', 'historiasdeterror', 'miedo', 'paranormal', 'leyendas'],
+  vive4d: ['fe', 'dios', 'versiculos', 'biblia', 'esperanza'],
 };
 
 const TIKTOK_HASHTAGS_ALCANCE = ['parati', 'fyp'];
@@ -120,6 +121,16 @@ async function generarReelParaCuenta(categoria, accountName) {
         finalPath = conAmbiente;
       } catch (err) {
         logger.warn('No se pudo mezclar el ambiente tenebroso, el reel sigue sin el', { account: accountName, error: err.message });
+      }
+    }
+
+    if (account.ambienteAngelical) {
+      const conAmbiente = path.join(workDir, 'reel-angelical.mp4');
+      try {
+        await mezclarAmbienteAngelical(finalPath, conAmbiente, { volumen: account.ambienteVolumen || 0.12 });
+        finalPath = conAmbiente;
+      } catch (err) {
+        logger.warn('No se pudo mezclar el ambiente angelical, el reel sigue sin el', { account: accountName, error: err.message });
       }
     }
   }
