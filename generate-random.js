@@ -192,7 +192,13 @@ function logResult(plataforma, accountName, result) {
   if (result.status === 'fulfilled') {
     logger.info(`${plataforma}: OK`, { account: accountName, ...(result.value || {}) });
   } else {
-    logger.error(`${plataforma}: fallo`, { account: accountName, error: result.reason.message });
+    const err = result.reason;
+    const detalleMeta = err?.response?.data ? JSON.stringify(err.response.data) : null;
+    logger.error(`${plataforma}: fallo`, {
+      account: accountName,
+      error: err?.message,
+      detalleMeta,
+    });
   }
 }
 
