@@ -4,19 +4,22 @@ on:
   workflow_dispatch:
     inputs:
       cuenta:
-        description: 'Cuenta a correr (vacio = todas)'
+        description: 'Cuenta a correr (curious4d, canal2, oscuro4d, vive4d, o vacio)'
         required: false
         default: ''
   schedule:
-    - cron: '20 9 * * *'
-    - cron: '10 11 * * *'
+    - cron: '0 9 * * *'
+    - cron: '25 9 * * *'
+    - cron: '40 10 * * *'
+    - cron: '55 11 * * *'
     - cron: '0 14 * * *'
-    - cron: '50 15 * * *'
-    - cron: '40 17 * * *'
-    - cron: '30 19 * * *'
-    - cron: '20 21 * * *'
-    - cron: '15 22 * * *'
-    - cron: '10 23 * * *'
+    - cron: '15 15 * * *'
+    - cron: '55 16 * * *'
+    - cron: '35 18 * * *'
+    - cron: '15 20 * * *'
+    - cron: '55 21 * * *'
+    - cron: '0 0 * * *'
+    - cron: '40 1 * * *'
 
 concurrency:
   group: stories
@@ -25,7 +28,7 @@ concurrency:
 jobs:
   publicar-historias:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -60,15 +63,18 @@ jobs:
             CUENTA="$CUENTA_MANUAL"
           else
             case "$CRON" in
-              "20 9 * * *")  CUENTA="curious4d" ;;
-              "10 11 * * *") CUENTA="canal2" ;;
-              "0 14 * * *")  CUENTA="oscuro4d" ;;
-              "50 15 * * *") CUENTA="curious4d" ;;
-              "40 17 * * *") CUENTA="canal2" ;;
-              "30 19 * * *") CUENTA="oscuro4d" ;;
-              "20 21 * * *") CUENTA="curious4d" ;;
-              "15 22 * * *") CUENTA="canal2" ;;
-              "10 23 * * *") CUENTA="oscuro4d" ;;
+              "0 9 * * *")  CUENTA="curious4d" ;;
+              "25 9 * * *")  CUENTA="canal2" ;;
+              "40 10 * * *")  CUENTA="oscuro4d" ;;
+              "55 11 * * *")  CUENTA="vive4d" ;;
+              "0 14 * * *")  CUENTA="curious4d" ;;
+              "15 15 * * *")  CUENTA="canal2" ;;
+              "55 16 * * *")  CUENTA="oscuro4d" ;;
+              "35 18 * * *")  CUENTA="vive4d" ;;
+              "15 20 * * *")  CUENTA="curious4d" ;;
+              "55 21 * * *")  CUENTA="canal2" ;;
+              "0 0 * * *")  CUENTA="oscuro4d" ;;
+              "40 1 * * *")  CUENTA="vive4d" ;;
               *)             CUENTA="" ;;
             esac
           fi
@@ -83,9 +89,6 @@ jobs:
           git add data/ 2>/dev/null || true
           git diff --staged --quiet && echo "Nada que guardar" && exit 0
           git commit -m "Actualizar historial de temas (historias) [skip ci]"
-          for intento in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push && echo "Historial guardado" && exit 0
-            echo "Choque de push (intento $intento), reintentando..."
-            sleep $((RANDOM % 10 + 3))
-          done
-          echo "No se pudo guardar el historial tras varios intentos (no critico)"
+          git pull --rebase --autostash origin main || true
+          git push || echo "No se pudo hacer push"
+          echo "Historial guardado"
