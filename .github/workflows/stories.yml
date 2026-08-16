@@ -55,6 +55,7 @@ jobs:
       - name: Generar y publicar Historias
         env:
           DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
+          TIKTOK_ENABLED: ${{ vars.TIKTOK_ENABLED || 'true' }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
           CRON: ${{ github.event.schedule }}
           CUENTA_MANUAL: ${{ inputs.cuenta }}
