@@ -35,19 +35,28 @@ const YOUTUBE_CATEGORIES = {
   vive4d: '22',
 };
 
+const TIKTOK_HASHTAG_FIJO = {
+  curious4d: 'curiosidades',
+  hipotesis4d: 'quepasariasi',
+  oscuro4d: 'historiasdeterror',
+  vive4d: 'biblia',
+};
+
 const TIKTOK_HASHTAGS_NICHO = {
-  curious4d: ['datoscuriosos', 'sabiasque', 'curiosidades', 'aprendeentiktok', 'datosinteresantes'],
-  hipotesis4d: ['quepasariasi', 'historiaalternativa', 'hipotesis', 'reflexion', 'datoscuriosos'],
-  oscuro4d: ['terror', 'historiasdeterror', 'miedo', 'paranormal', 'leyendas'],
-  vive4d: ['fe', 'dios', 'versiculos', 'biblia', 'esperanza'],
+  curious4d: ['datoscuriosos', 'sabiasque', 'aprendeentiktok', 'datosinteresantes'],
+  hipotesis4d: ['historiaalternativa', 'hipotesis', 'reflexion', 'datoscuriosos'],
+  oscuro4d: ['terror', 'miedo', 'paranormal', 'leyendas'],
+  vive4d: ['fe', 'dios', 'jesus', 'versiculos', 'esperanza'],
 };
 
 const TIKTOK_HASHTAGS_ALCANCE = ['parati', 'fyp'];
 
 function buildTikTokCaption(script, contentProfile) {
   const base = (script.topic || '').slice(0, 150);
-  const nicho = (TIKTOK_HASHTAGS_NICHO[contentProfile] || TIKTOK_HASHTAGS_NICHO.curious4d).slice(0, 3);
-  const todos = [...new Set([...nicho, ...TIKTOK_HASHTAGS_ALCANCE])].slice(0, 5);
+  const fijo = TIKTOK_HASHTAG_FIJO[contentProfile] || TIKTOK_HASHTAG_FIJO.curious4d;
+  const nichoPool = TIKTOK_HASHTAGS_NICHO[contentProfile] || TIKTOK_HASHTAGS_NICHO.curious4d;
+  const nichoVariable = [...nichoPool].sort(() => Math.random() - 0.5).slice(0, 2);
+  const todos = [...new Set([fijo, ...nichoVariable, ...TIKTOK_HASHTAGS_ALCANCE])].slice(0, 5);
   const hashtags = todos.map((t) => '#' + t).join(' ');
   return `${base}\n\n${hashtags}`.trim();
 }
