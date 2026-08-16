@@ -28,6 +28,13 @@ function buildDescription(script, account) {
   return `${base}\n\n${hashtags}`.trim();
 }
 
+const YOUTUBE_CATEGORIES = {
+  curious4d: '27',
+  hipotesis4d: '24',
+  oscuro4d: '24',
+  vive4d: '22',
+};
+
 const TIKTOK_HASHTAGS_NICHO = {
   curious4d: ['datoscuriosos', 'sabiasque', 'curiosidades', 'aprendeentiktok', 'datosinteresantes'],
   hipotesis4d: ['quepasariasi', 'historiaalternativa', 'hipotesis', 'reflexion', 'datoscuriosos'],
@@ -80,7 +87,7 @@ async function generarReelParaCuenta(categoria, accountName) {
       });
 
       const audioPath = path.join(workDir, `segment-${i}.mp3`);
-      await textToSpeech(segment.narration, audioPath, { voice: account.voice, rate: account.voiceRate, pitch: account.voicePitch });
+      await textToSpeech(segment.narration, audioPath, { voice: account.voice, rate: account.voiceRate, pitch: account.voicePitch, corregirCitas: account.contentProfile === 'vive4d' });
 
       const syncedPath = path.join(workDir, `synced-${i}.mp4`);
       const { duration } = await buildSyncedSegment(clipPath, audioPath, syncedPath, { zoomEntrada: i === 0 });
@@ -127,7 +134,7 @@ async function generarReelParaCuenta(categoria, accountName) {
     if (account.ambienteAngelical) {
       const conAmbiente = path.join(workDir, 'reel-angelical.mp4');
       try {
-        await mezclarAmbienteAngelical(finalPath, conAmbiente, { volumen: account.ambienteVolumen || 0.12 });
+        await mezclarAmbienteAngelical(finalPath, conAmbiente, { volumen: account.ambienteVolumen || 0.28 });
         finalPath = conAmbiente;
       } catch (err) {
         logger.warn('No se pudo mezclar el ambiente angelical, el reel sigue sin el', { account: accountName, error: err.message });
@@ -147,6 +154,7 @@ async function generarReelParaCuenta(categoria, accountName) {
       tags: script.tags,
       credentialsPath: account.youtubeCredentialsPath,
       tokenPath: account.youtubeTokenPath,
+      categoryId: YOUTUBE_CATEGORIES[account.contentProfile] || '27',
     }),
     publishFacebookReel({
       pageId: account.facebookPageId,
@@ -170,6 +178,10 @@ async function generarReelParaCuenta(categoria, accountName) {
 }
 
 async function publishTikTokIfAvailable(account, finalPath, description, script) {
+  if (String(process.env.TIKTOK_ENABLED || 'true').toLowerCase() === 'false') {
+    logger.info('TikTok: pausado globalmente (TIKTOK_ENABLED=false), se omite');
+    return { skipped: true, pausado: true };
+  }
   let publishVideo;
   try {
     ({ publishVideo } = require('./lib/tiktok'));
