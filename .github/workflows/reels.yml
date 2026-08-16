@@ -82,6 +82,7 @@ jobs:
       - name: Generar y publicar Reels
         env:
           DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
+          TIKTOK_ENABLED: ${{ vars.TIKTOK_ENABLED || 'true' }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
           ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
           ZERNIO_ACCOUNT_CURIOUS4D: ${{ secrets.ZERNIO_ACCOUNT_CURIOUS4D }}
