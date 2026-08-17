@@ -23,7 +23,11 @@ const DRY_RUN = (process.env.DRY_RUN ?? 'true').toLowerCase() !== 'false';
 const SEGMENT_COUNT = Number(process.env.SEGMENT_COUNT) || 7;
 
 function buildDescription(script, account) {
-  const hashtags = (script.tags || []).map((t) => '#' + t.replace(/\s+/g, '')).slice(0, 5).join(' ');
+  const perfil = account.contentProfile || 'curious4d';
+  const fijo = TIKTOK_HASHTAG_FIJO[perfil] || TIKTOK_HASHTAG_FIJO.curious4d;
+  const generados = (script.tags || []).map((t) => t.replace(/\s+/g, ''));
+  const todos = [...new Set([fijo, ...generados])].slice(0, 5);
+  const hashtags = todos.map((t) => '#' + t).join(' ');
   const base = script.topic || '';
   return `${base}\n\n${hashtags}`.trim();
 }
