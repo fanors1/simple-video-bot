@@ -7,10 +7,6 @@ on:
         description: 'Cuenta a correr (vacio = todas)'
         required: false
         default: ''
-  schedule:
-    - cron: '0 4 * * *'
-    - cron: '30 5 * * *'
-    - cron: '0 7 * * *'
 
 concurrency:
   group: long-videos
